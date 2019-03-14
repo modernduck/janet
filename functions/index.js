@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 const express = require('express');
 const line = require('@line/bot-sdk');
 const cors = require('cors')
-
+const userController = require('./user.controller')
 
   const config = {
     channelAccessToken: functions.config().line.channel_access_token,
@@ -52,20 +52,28 @@ function handleEvent(event) {
         return client.getProfile(event.source.userId).then(profile => {
             console.log('profile')
             console.log(profile)
-            const introduction = { type: 'text', text: `Thank you for adding me ${profile.displayName}. I'm Janet ` };
+            const introduction = { type: 'text', text: `Thank you for adding me ${profile.displayName}. I'm Janet and Now i'm creating ur profile ` };
             return client.replyMessage(event.replyToken, introduction);
-        } )
+        } ).then(replyEvent => userController.createUserProfile(event.source.userId, "line") )
         
     }else if (event.type !== 'message' || event.message.type !== 'text') {
       // ignore non-text-message event
       return Promise.resolve(null);
     }
+    return userController.getUserProfile(event.source.userId).then(doc => {
+      var replyMessage = { type: 'text', text: event.message.text };
+      if (!doc.exists) {
+        console.log(doc)
+        replyMessage = { type: 'text', text: "Please wait for a while we creating your profile!!" };
+      } else {
+        console.log('Document data:', doc.data());
+      }
+      return client.replyMessage(event.replyToken, replyMessage);
+    })
+    
   
     // create a echoing text message
-    const echo = { type: 'text', text: event.message.text };
-  
-    // use reply API
-    return client.replyMessage(event.replyToken, echo);
+    
   }
 
   
