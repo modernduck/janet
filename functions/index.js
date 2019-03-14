@@ -2,7 +2,11 @@ const functions = require('firebase-functions');
 const express = require('express');
 const line = require('@line/bot-sdk');
 const cors = require('cors')
-const userController = require('./user.controller')
+const userController = require('./controllers/user.controller');
+const defaultIntents = require('./intents/default');
+const getSaveStuffIntents = require('./intents/getSaveStuff');
+const bkkSwingIntents = require("./intents/bkkSwing")
+
 const { WebhookClient } = require("dialogflow-fulfillment");
 const { Card, Suggestion } = require("dialogflow-fulfillment");
 
@@ -89,33 +93,14 @@ exports.test = functions.https.onRequest((req, res) => {
       request: req,
       response: res
     });
-     console.log('run v agent6')
+    
+     console.log('run v agent  13')
      let intentMap = new Map();
-    intentMap.set("Save Stuff", () => {
-      var params = req.body.queryResult.parameters;
-      if(req.body.originalDetectIntentRequest.source == 'line'){
-        var lineId = req.body.originalDetectIntentRequest.payload.data.source.userId;
-        console.log('going to process line stuff:', lineId)
-        console.log(params)
-        return userController.saveUserStuff(lineId, params.name, params.stuff ).then(result =>{
-          console.log('done ')
-          console.log(result)
-          return agent.add("Done Save")
-        })
-      }
-    } );
-    intentMap.set("Get Stuff", () => {
-      var params = req.body.queryResult.parameters;
-      if(req.body.originalDetectIntentRequest.source == 'line'){
-        var lineId = req.body.originalDetectIntentRequest.payload.data.source.userId;
-        return userController.getUserStuff(lineId, params.name).then(snap => {
-          if(snap && snap.val())
-            return agent.add(snap.val());
-          else
-            return agent.get(`Cant find ${params.name}.`)
-        })
-      }
-    })
+     //module.exports = {
+    intentMap.set("Save Stuff", getSaveStuffIntents.saveStuff(req, agent) );
+    intentMap.set("Get Stuff", getSaveStuffIntents.getStuff(req, agent) );
+    intentMap.set("Default Fallback Intent", defaultIntents.fallback(req, agent) );
+    intentMap.set("Show Social Dance Schedule", bkkSwingIntents.getSocialSchedule(req, agent));
     agent.handleRequest(intentMap);
    } )
 })
