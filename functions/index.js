@@ -3,6 +3,8 @@ const express = require('express');
 const line = require('@line/bot-sdk');
 const cors = require('cors')
 const userController = require('./user.controller')
+const { WebhookClient } = require("dialogflow-fulfillment");
+const { Card, Suggestion } = require("dialogflow-fulfillment");
 
   const config = {
     channelAccessToken: functions.config().line.channel_access_token,
@@ -76,6 +78,44 @@ function handleEvent(event) {
     
   }
 
-  
-
 exports.lineback = functions.https.onRequest(app)
+
+// webhook for dialogflow
+exports.test = functions.https.onRequest((req, res) => {
+  
+  
+   return cors({ origin: true })(req, res, () => {
+    const agent = new WebhookClient({
+      request: req,
+      response: res
+    });
+     console.log('run v agent6')
+     let intentMap = new Map();
+    intentMap.set("Save Stuff", () => {
+      var params = req.body.queryResult.parameters;
+      if(req.body.originalDetectIntentRequest.source == 'line'){
+        var lineId = req.body.originalDetectIntentRequest.payload.data.source.userId;
+        console.log('going to process line stuff:', lineId)
+        console.log(params)
+        return userController.saveUserStuff(lineId, params.name, params.stuff ).then(result =>{
+          console.log('done ')
+          console.log(result)
+          return agent.add("Done Save")
+        })
+      }
+    } );
+    intentMap.set("Get Stuff", () => {
+      var params = req.body.queryResult.parameters;
+      if(req.body.originalDetectIntentRequest.source == 'line'){
+        var lineId = req.body.originalDetectIntentRequest.payload.data.source.userId;
+        return userController.getUserStuff(lineId, params.name).then(snap => {
+          if(snap && snap.val())
+            return agent.add(snap.val());
+          else
+            return agent.get(`Cant find ${params.name}.`)
+        })
+      }
+    })
+    agent.handleRequest(intentMap);
+   } )
+})

@@ -6,7 +6,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://janet-3e832.firebaseio.com"
 });
-const firestore = admin.firestore();
+const db = admin.database();
 
 const createUserObjectFromChannelName = channelName => {
   console.log('create user object :', channelName)
@@ -26,7 +26,13 @@ module.exports = {
     checkIfAvailableEmail:(email) => {
         return validateEmail(email)
     },
-    createUserProfile:(userKey, channelName) => firestore.collection('users').doc(userKey).set(createUserObjectFromChannelName(channelName)),
-    getUserProfile:(userKey) => firestore.collection('users').doc(userKey).get()
+    createUserProfile:(userKey, channelName) => db.ref('users').child(userKey).set(createUserObjectFromChannelName(channelName)),
+    getUserProfile:(userKey) => db.ref('users').child(userKey).toJSON() ,
+    saveUserStuff:(userKey, key, value) =>{
+      console.log(`key ${key} value ${value}`);
+      //return  firestore.collection('users').doc(userKey).collection('stuff').doc(key).set(value)
+      return db.ref('users').child(userKey).child('stuff').child(key).set(value);
+    } ,
+    getUserStuff:(userKey, key) =>  db.ref('users').child(userKey).child('stuff').child(key).once('value') //firestore.collection('users').doc(userKey).collection('stuff').doc(key).get()
 
 }

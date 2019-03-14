@@ -6,8 +6,11 @@ yarn-debug.log*
 yarn-error.log*
 firebase-debug.log*
 
+
 # serviceACC
 serviceAccount.json
+
+functions/package-lock.json
 
 # Firebase cache
 .firebase/
