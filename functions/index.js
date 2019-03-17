@@ -6,6 +6,7 @@ const userController = require('./controllers/user.controller');
 const defaultIntents = require('./intents/default');
 const getSaveStuffIntents = require('./intents/getSaveStuff');
 const bkkSwingIntents = require("./intents/bkkSwing")
+const funnyIntents = require("./intents/funny")
 
 const { WebhookClient } = require("dialogflow-fulfillment");
 const { Card, Suggestion } = require("dialogflow-fulfillment");
@@ -94,13 +95,16 @@ exports.test = functions.https.onRequest((req, res) => {
       response: res
     });
     
-     console.log('run v agent  13')
+     console.log('run v agent  15')
      let intentMap = new Map();
      //module.exports = {
     intentMap.set("Save Stuff", getSaveStuffIntents.saveStuff(req, agent) );
     intentMap.set("Get Stuff", getSaveStuffIntents.getStuff(req, agent) );
     intentMap.set("Default Fallback Intent", defaultIntents.fallback(req, agent) );
     intentMap.set("Show Social Dance Schedule", bkkSwingIntents.getSocialSchedule(req, agent));
+    intentMap.set("What day is today", bkkSwingIntents.whatDayIsToday(req, agent));
+    intentMap.set("Do we have social", bkkSwingIntents.doWeHaveSocialAtTime(req, agent));
+    intentMap.set("Search picture", funnyIntents.sendPicture(req, agent));
     agent.handleRequest(intentMap);
    } )
 })
