@@ -19,6 +19,18 @@ module.exports = {
             }else
                 return agent.add("Sorry don't have any picture")
         })
+    }),
+    dickMesure: (req, agent) => (() => {
+        var params = req.body.queryResult.parameters;
+        var sum = 0;
+        console.log(params)
+        for(var k = 0; k < params.name.length ; k ++){
+            console.log(params.name.charCodeAt(k))
+            sum += params.name.charCodeAt(k);
+        }
+        console.log('sum', sum)
+        var size = sum = sum / 7 % 12;
+        return agent.add(`${params.name}'s dick size is ${size} inch`);
     })
 
 }

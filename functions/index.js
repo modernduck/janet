@@ -7,6 +7,8 @@ const defaultIntents = require('./intents/default');
 const getSaveStuffIntents = require('./intents/getSaveStuff');
 const bkkSwingIntents = require("./intents/bkkSwing")
 const funnyIntents = require("./intents/funny")
+const utilitiesIntents = require("./intents/utilities")
+const votingGameIntents = require("./intents/voting-game")
 
 const { WebhookClient } = require("dialogflow-fulfillment");
 const { Card, Suggestion } = require("dialogflow-fulfillment");
@@ -105,6 +107,13 @@ exports.test = functions.https.onRequest((req, res) => {
     intentMap.set("What day is today", bkkSwingIntents.whatDayIsToday(req, agent));
     intentMap.set("Do we have social", bkkSwingIntents.doWeHaveSocialAtTime(req, agent));
     intentMap.set("Search picture", funnyIntents.sendPicture(req, agent));
+    intentMap.set("Split the bill - no - total", utilitiesIntents.splitBillsWithOutAlc(req, agent));
+    intentMap.set("Split the bill - yes - drinker - total", utilitiesIntents.splitBills(req, agent));
+    intentMap.set('Dick Measure', funnyIntents.dickMesure(req, agent) );
+    intentMap.set("voting-game.setProfile", votingGameIntents.setProfile(req, agent, client))
+    intentMap.set("voting-game.setProfile - no", votingGameIntents.voteNo(req, agent));
+    intentMap.set("voting-game.setProfile - yes", votingGameIntents.voteYes(req, agent));
+    intentMap.set("voting-game.setProfile - done", votingGameIntents.removeVote(req, agent))
     agent.handleRequest(intentMap);
    } )
 })
