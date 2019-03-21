@@ -32,5 +32,19 @@ module.exports = {
             return votingGameController.removeVote(lineId).then(() => agent.add("you have done playing voting game"))
         }else
         return agent.add("Sorry we support only line platform for now")
+    }),
+    resetVote : (req, agent) => (()=> {
+        if(req.body.originalDetectIntentRequest.source == 'line'){
+            console.log('done line')
+            var lineId = req.body.originalDetectIntentRequest.payload.data.source.userId;
+            votingGameController.resetVotes(lineId).then(result => {
+                console.log('after result')
+                if(result)
+                    return agent.add("Reset Vote");
+                else
+                    return agent.add("Only Admin Can Vote");
+            })
+        }else
+            return agent.add("Sorry we support only line platform for now")
     })
 }//voting-game.setProfile - done

@@ -67,6 +67,7 @@ function handleEvent(event) {
         
     }else if (event.type !== 'message' || event.message.type !== 'text') {
       // ignore non-text-message event
+      //client.pushMessage()
       return Promise.resolve(null);
     }
     return userController.getUserProfile(event.source.userId).then(doc => {
@@ -97,7 +98,7 @@ exports.test = functions.https.onRequest((req, res) => {
       response: res
     });
     
-     console.log('run v agent  15')
+     console.log('run v agent 18')
      let intentMap = new Map();
      //module.exports = {
     intentMap.set("Save Stuff", getSaveStuffIntents.saveStuff(req, agent) );
@@ -114,6 +115,7 @@ exports.test = functions.https.onRequest((req, res) => {
     intentMap.set("voting-game.setProfile - no", votingGameIntents.voteNo(req, agent));
     intentMap.set("voting-game.setProfile - yes", votingGameIntents.voteYes(req, agent));
     intentMap.set("voting-game.setProfile - done", votingGameIntents.removeVote(req, agent))
+    intentMap.set("voting-game.setProfile - reset", votingGameIntents.resetVote(req, agent))
     agent.handleRequest(intentMap);
    } )
 })

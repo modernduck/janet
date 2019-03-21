@@ -36,6 +36,16 @@ module.exports = {
             }else
                 return agent.add(sayRandomStuff());
         }
+    },
+    talkToLineContact: (req, agent, client) => {
+        if(req.body.originalDetectIntentRequest.source == 'line'){
+            //push notification
+            //get contact
+            //Send message to sompop(contact in entity) "go fuck your self"
+            //userController.getContact(entity_name).then(contact => client.pushMessage(contact.lineUID, params.message))
+            //client.pushMessage()
+        }else
+            return agent.add("Sorry we support only line channel")
     }
 
 

@@ -17,6 +17,21 @@ module.exports = {
     },
     getVotes : () => {
         return db.ref('votingGame').once('value')
+    },
+    resetVotes : (profileID) => {
+        console.log('doing reset')
+        return userController.isAdmin(profileID).then(isAdmin => {
+            console.log('yo!! is admin', isAdmin)
+            if(isAdmin)
+                {
+                    db.ref('votingGame').child('status').remove(com => { console.log('complete'); console.log(com)}).then(result => {
+                        console.log('try remove')
+                        console.log(result)
+                    })
+                    return true;
+                } 
+            return false;
+        })
     }
 
 }
